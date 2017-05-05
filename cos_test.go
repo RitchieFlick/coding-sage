@@ -6,42 +6,39 @@ import (
 	"github.com/RitchieFlick/cos"
 )
 
-var ExistinghardcodedValues = []struct {
-	value string
-}{
-	{"Remember: YAGNI (You Ain’t Gonna Need It)"},
+type testHardCode struct{}
+
+func (t testHardCode) GetPhrases() ([]string, error) {
+	var list []string
+	list = append(list, "Remember: YAGNI (You Ain’t Gonna Need It)")
+	list = append(list, "Remember: 3-2-1 Backup Strategy")
+	return list, nil
 }
 
-var NonExistinghardcodedValues = []struct {
-	value string
-}{
-	{"Olla"},
-}
-
-func TestExistingHardCodedValues(t *testing.T) {
-	var included bool = false
+func TestGetRandomPhrase(t *testing.T) {
 	api := cos.NewAPI()
-	randomPhrase, _ := api.GetRandomPhrase()
-	for _, value := range ExistinghardcodedValues {
-		if value.value == randomPhrase {
-			included = true
+	api.AddDatastore(testHardCode{})
+	firstPhrase, err := api.GetRandomPhrase()
+	if err != nil {
+		t.Errorf("An error was raised!", err)
+	}
+
+	var samePhrase = true
+
+	for i := 0; i < 4; i++ {
+		api := cos.NewAPI()
+		api.AddDatastore(testHardCode{})
+		phrase, err := api.GetRandomPhrase()
+		if err != nil {
+			t.Errorf("An error was raised!", err)
+		}
+		t.Logf(phrase)
+		if firstPhrase != phrase {
+			samePhrase = false
 		}
 	}
-	if !included {
-		t.Errorf("The phrase wasn't found although it should!", ExistinghardcodedValues, randomPhrase)
-	}
-}
 
-func TestNonExistingHardCodedValues(t *testing.T) {
-	var included bool = false
-	api := cos.NewAPI()
-	randomPhrase, _ := api.GetRandomPhrase()
-	for _, value := range NonExistinghardcodedValues {
-		if value.value == randomPhrase {
-			included = true
-		}
-	}
-	if included {
-		t.Errorf("The phrase was found although it shouldn't!", randomPhrase, NonExistinghardcodedValues)
+	if samePhrase {
+		t.Errorf("Only the same phrase was always returned!")
 	}
 }

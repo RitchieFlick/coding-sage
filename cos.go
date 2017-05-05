@@ -2,7 +2,12 @@ package cos
 
 import (
 	"math/rand"
+	"time"
 )
+
+func init() {
+	rand.Seed(time.Now().UTC().UnixNano())
+}
 
 type datastore interface {
 	GetPhrases() ([]string, error)
