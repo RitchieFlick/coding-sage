@@ -2,8 +2,6 @@ package cos
 
 import (
 	"math/rand"
-
-	store "github.com/RitchieFlick/cos/datastore"
 )
 
 type datastore interface {
@@ -12,14 +10,18 @@ type datastore interface {
 
 // NewAPI creates a new instance of the API of cos.
 func NewAPI() API {
-	var listDatastores []datastore
-	listDatastores = append(listDatastores, store.HardCoded{})
-	return API{datastores: listDatastores}
+	return API{}
 }
 
 // API represents the main entry point for the project.
 type API struct {
 	datastores []datastore
+}
+
+// AddDatastore adds a new datastore to the list of existing datastores
+func (api *API) AddDatastore(datastore datastore) error {
+	api.datastores = append(api.datastores, datastore)
+	return nil
 }
 
 // GetPhrases returns a random phrase from the list of different Datastores.
